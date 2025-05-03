@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AdMetrics - Dashboard de Métricas</title>
+<style>
+:root {
+--bg-dark: #121212;
+--bg-card: #1e1e1e;
+--bg-sidebar: #181818;
+--turquoise-primary: #00bcd4;
+--turquoise-light: #4dd0e1;
+--turquoise-dark: #0097a7;
+--turquoise-accent: #1de9b6;
+--text-primary: #ffffff;
+--text-secondary: #b3b3b3;
+--danger: #f44336;
+--success: #4caf50;
+--warning: #ff9800;
+}
+
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+background-color: var(--bg-dark);
+color: var(--text-primary);
+min-height: 100vh;
+display: flex;
+}
+
+.sidebar {
+width: 240px;
+background-color: var(--bg-sidebar);
+padding: 24px 0;
+display: flex;
+flex-direction: column;
+box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+z-index: 10;
+}
+
+.sidebar-header {
+display: flex;
+align-items: center;
+padding: 0 24px 24px;
+border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+margin-bottom: 24px;
+}
+
+.logo {
+display: flex;
+align-items: center;
+/* Remove gap if only image */
+/* gap: 12px; */
+}
+
+/* Added style for the image logo */
+.logo img {
+height: 32px; /* Adjust height as needed */
+width: auto;
+}
+
+
+/* Existing logo styles (kept for reference if needed elsewhere, but removed from .logo div) */
+/*
+.logo-icon {
+color: var(--turquoise-primary);
+font-size: 24px;
+}
+
+.logo-text {
+font-weight: 700;
+font-size: 20px;
+color: var(--text-primary);
+}
+
+.logo-text span {
+color: var(--turquoise-primary);
+}
+*/
+
+
+.menu {
+display: flex;
+flex-direction: column;
+flex-grow: 1;
+}
+
+.menu-item {
+display: flex;
+align-items: center;
+padding: 12px 24px;
+color: var(--text-secondary);
+text-decoration: none;
+transition: all 0.2s ease;
+border-left: 3px solid transparent;
+}
+
+.menu-item:hover {
+background-color: rgba(0, 188, 212, 0.1);
+color: var(--text-primary);
+}
+
+.menu-item.active {
+background-color: rgba(0, 188, 212, 0.15);
+color: var(--turquoise-primary);
+border-left: 3px solid var(--turquoise-primary);
+}
+
+.menu-item i {
+margin-right: 12px;
+font-size: 18px;
+}
+
+.user {
+padding: 16px 24px;
+margin-top: auto;
+border-top: 1px solid rgba(255, 255, 255, 0.1);
+display: flex;
+align-items: center;
+}
+
+.user-avatar {
+width: 36px;
+height: 36px;
+border-radius: 50%;
+background-color: var(--turquoise-dark);
+display: flex;
+align-items: center;
+justify-content: center;
+margin-right: 12px;
+font-weight: bold;
+color: var(--text-primary);
+}
+
+.user-info {
+flex-grow: 1;
+}
+
+.user-name {
+font-weight: 600;
+font-size: 14px;
+}
+
+.user-role {
+font-size: 12px;
+color: var(--text-secondary);
+}
+
+.main-content {
+flex-grow: 1;
+display: flex;
+flex-direction: column;
+overflow: hidden;
+}
+
+.header {
+height: 64px;
+display: flex;
+align-items: center;
+justify-content: space-between;
+padding: 0 32px;
+border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.page-title-container { /* Added container for title and date */
+    display: flex;
+    flex-direction: column;
+}
+
+.page-title {
+font-size: 18px;
+font-weight: 600;
+margin-bottom: 4px; /* Space between title and date */
+}
+
+.report-date { /* Added style for the date text */
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+
+.header-actions {
+display: flex;
+gap: 16px;
+}
+
+.search-bar {
+position: relative;
+display: flex;
+align-items: center;
+}
+
+.search-bar input {
+background-color: rgba(255, 255, 255, 0.1);
+border: none;
+border-radius: 4px;
+padding: 8px 16px 8px 36px;
+color: var(--text-primary);
+font-size: 14px;
+width: 240px;
+transition: all 0.3s ease;
+}
+
+.search-bar input:focus {
+outline: none;
+background-color: rgba(255, 255, 255, 0.15);
+width: 280px;
+}
+
+.search-bar i {
+position: absolute;
+left: 12px;
+color: var(--text-secondary);
+}
+
+.header-button {
+background-color: transparent;
+border: none;
+color: var(--text-secondary);
+font-size: 18px;
+cursor: pointer;
+width: 36px;
+height: 36px;
+border-radius: 50%;
+display: flex;
+align-items: center;
+justify-content: center;
+transition: all 0.2s ease;
+}
+
+.header-button:hover {
+background-color: rgba(255, 255, 255, 0.1);
+color: var(--text-primary);
+}
+
+.header-button.has-notifications::after {
+content: '';
+position: absolute;
+top: 6px;
+right: 6px;
+width: 8px;
+height: 8px;
+background-color: var(--turquoise-primary);
+border-radius: 50%;
+}
+
+.dashboard {
+padding: 24px 32px;
+overflow-y: auto;
+display: flex;
+flex-direction: column;
+gap: 24px;
+}
+
+.stats-row {
+display: grid;
+grid-template-columns: repeat(4, 1fr);
+gap: 24px;
+}
+
+.stats-card {
+background-color: var(--bg-card);
+border-radius: 12px;
+padding: 24px;
+box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+display: flex;
+flex-direction: column;
+transition: all 0.3s ease;
+}
+
+.stats-card:hover {
+transform: translateY(-4px);
+box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.stats-card-header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 16px;
+}
+
+.stats-card-title {
+font-size: 14px;
+color: var(--text-secondary);
+}
+
+.stats-card-icon {
+width: 40px;
+height: 40px;
+border-radius: 10px;
+background-color: rgba(0, 188, 212, 0.15);
+display: flex;
+align-items: center;
+justify-content: center;
+color: var(--turquoise-primary);
+font-size: 18px;
+}
+
+.stats-card-value {
+font-size: 28px;
+font-weight: 700;
+margin-bottom: 8px;
+}
+
+.highlight {
+color: var(--turquoise-accent);
+text-shadow: 0 0 10px rgba(29, 233, 182, 0.3);
+}
+
+.stats-card-subtitle {
+font-size: 13px;
+color: var(--text-secondary);
+display: flex;
+align-items: center;
+}
+
+.stats-card-trend {
+display: flex;
+align-items: center;
+margin-left: 8px;
+font-weight: 600;
+}
+
+.trend-up {
+color: var(--success);
+}
+
+.trend-down {
+color: var(--danger);
+}
+
+.chart-row {
+display: grid;
+grid-template-columns: 2fr 1fr;
+gap: 24px;
+}
+
+.chart-card {
+background-color: var(--bg-card);
+border-radius: 12px;
+padding: 24px;
+box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.chart-header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 24px;
+}
+
+.chart-title {
+font-size: 16px;
+font-weight: 600;
+}
+
+.chart-actions {
+display: flex;
+gap: 12px;
+}
+
+.chart-button {
+background-color: rgba(255, 255, 255, 0.05);
+border: none;
+padding: 6px 12px;
+border-radius: 4px;
+color: var(--text-secondary);
+font-size: 12px;
+cursor: pointer;
+transition: all 0.2s ease;
+}
+
+.chart-button:hover {
+background-color: rgba(0, 188, 212, 0.1);
+color: var(--turquoise-primary);
+}
+
+.chart-button.active {
+background-color: rgba(0, 188, 212, 0.15);
+color: var(--turquoise-primary);
+}
+
+.campaign-list {
+display: flex;
+flex-direction: column;
+gap: 16px;
+}
+
+.campaign-row {
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 16px;
+background-color: rgba(255, 255, 255, 0.03);
+border-radius: 8px;
+transition: all 0.2s ease;
+}
+
+.campaign-row:hover {
+background-color: rgba(255, 255, 255, 0.05);
+}
+
+.campaign-info {
+display: flex;
+align-items: center;
+gap: 16px;
+}
+
+.campaign-color {
+width: 12px;
+height: 12px;
+border-radius: 50%;
+}
+
+.campaign-color.color1 {
+background-color: var(--turquoise-primary);
+}
+
+.campaign-color.color2 {
+background-color: var(--turquoise-accent);
+}
+
+.campaign-color.color3 {
+background-color: var(--turquoise-light);
+}
+
+.campaign-name {
+font-weight: 500;
+}
+
+.campaign-metrics {
+display: flex;
+gap: 24px;
+}
+
+.campaign-metric {
+text-align: right;
+}
+
+.metric-value {
+font-weight: 600;
+font-size: 15px;
+}
+
+.metric-label {
+font-size: 12px;
+color: var(--text-secondary);
+}
+
+.table-card {
+background-color: var(--bg-card);
+border-radius: 12px;
+box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+overflow: hidden;
+}
+
+.table-header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 24px;
+border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+table {
+width: 100%;
+border-collapse: collapse;
+}
+
+thead {
+background-color: rgba(0, 0, 0, 0.2);
+}
+
+th {
+text-align: left;
+padding: 16px 24px;
+font-weight: 600;
+font-size: 13px;
+color: var(--text-secondary);
+}
+
+td {
+padding: 16px 24px;
+border-top: 1px solid rgba(255, 255, 255, 0.05);
+font-size: 14px;
+}
+
+tr:hover {
+background-color: rgba(255, 255, 255, 0.03);
+}
+
+.status {
+display: inline-flex;
+align-items: center;
+padding: 4px 8px;
+border-radius: 4px;
+font-size: 12px;
+font-weight: 500;
+}
+
+.status.active {
+background-color: rgba(76, 175, 80, 0.15);
+color: #4caf50;
+}
+
+.status.paused {
+background-color: rgba(255, 152, 0, 0.15);
+color: #ff9800;
+}
+
+.status.ended {
+background-color: rgba(244, 67, 54, 0.15);
+color: #f44336;
+}
+
+.action-btn {
+background-color: transparent;
+border: none;
+padding: 6px;
+border-radius: 4px;
+color: var(--text-secondary);
+cursor: pointer;
+transition: all 0.2s ease;
+}
+
+.action-btn:hover {
+background-color: rgba(255, 255, 255, 0.1);
+color: var(--text-primary);
+}
+
+.chart-container {
+height: 280px;
+width: 100%;
+margin-top: 12px;
+}
+
+.doughnut-chart-container {
+display: flex;
+align-items: center;
+justify-content: center;
+height: 280px;
+}
+
+.doughnut-chart {
+width: 180px;
+height: 180px;
+position: relative;
+}
+
+.doughnut-label {
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+text-align: center;
+}
+
+.doughnut-value {
+font-size: 24px;
+font-weight: 700;
+}
+
+.doughnut-text {
+font-size: 12px;
+color: var(--text-secondary);
+}
+
+.doughnut-legend {
+display: flex;
+flex-direction: column;
+gap: 12px;
+margin-left: 24px;
+}
+
+.legend-item {
+display: flex;
+align-items: center;
+gap: 8px;
+}
+
+.legend-color {
+width: 12px;
+height: 12px;
+border-radius: 50%;
+}
+
+.legend-text {
+font-size: 13px;
+}
+
+.legend-value {
+margin-left: auto;
+font-weight: 600;
+font-size: 14px;
+}
+
+@media (max-width: 1200px) {
+.stats-row {
+grid-template-columns: repeat(2, 1fr);
+}
+
+.chart-row {
+grid-template-columns: 1fr;
+}
+}
+
+@media (max-width: 768px) {
+.sidebar {
+width: 72px;
+}
+
+.logo-text, .menu-item span, .user-info {
+display: none;
+}
+
+/* Adjust logo for collapsed sidebar */
+.sidebar.collapsed .logo img {
+height: 24px; /* Smaller height for collapsed state */
+}
+
+
+.menu-item {
+justify-content: center;
+padding: 16px 0;
+}
+
+.menu-item i {
+margin-right: 0;
+}
+
+.user {
+justify-content: center;
+padding: 16px 0;
+}
+
+.user-avatar {
+margin-right: 0;
+}
+
+.stats-row {
+grid-template-columns: 1fr;
+}
+}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
+</head>
+<body>
+<div class="sidebar">
+<div class="sidebar-header">
+<div class="logo">
+<img src="https://i.imgur.com/r5TDYlR.jpeg" alt="Rocket Anúncios Logo">
+</div>
+</div>
+
+<div class="menu">
+<a href="#" class="menu-item active">
+<i>📊</i>
+<span>Dashboard</span>
+</a>
+<a href="#" class="menu-item">
+<i>📈</i>
+<span>Campanhas</span>
+</a>
+</div>
+
+<div class="user">
+<div class="user-avatar">M</div>
+<div class="user-info">
+<div class="user-name">Meu Perfil</div>
+<div class="user-role">Administrador</div>
+</div>
+</div>
+</div>
+
+<div class="main-content">
+<div class="header">
+<div class="page-title-container"> <h1 class="page-title">Dashboard de Métricas</h1>
+<span class="report-date">Dados referentes a 02/05/2025</span> </div>
+
+
+<div class="header-actions">
+<div class="search-bar">
+<i>🔍</i>
+<input type="text" placeholder="Pesquisar...">
+</div>
+<button class="header-button">📅</button>
+<button class="header-button">🔔</button>
+</div>
+</div>
+
+<div class="dashboard">
+<div class="stats-row">
+<div class="stats-card">
+<div class="stats-card-header">
+<div class="stats-card-title">IMPRESSÕES</div>
+<div class="stats-card-icon">👁️</div>
+</div>
+<div class="stats-card-value highlight">4.512</div>
+<div class="stats-card-subtitle">
+Últimos 7 dias
+<div class="stats-card-trend trend-up">
+<span>+15.3%</span>
+</div>
+</div>
+</div>
+
+<div class="stats-card">
+<div class="stats-card-header">
+<div class="stats-card-title">CLIQUES</div>
+<div class="stats-card-icon">👆</div>
+</div>
+<div class="stats-card-value">371</div>
+<div class="stats-card-subtitle">
+Últimos 7 dias
+<div class="stats-card-trend trend-up">
+<span>+8.7%</span>
+</div>
+</div>
+</div>
+
+<div class="stats-card">
+<div class="stats-card-header">
+<div class="stats-card-title">CTR</div>
+<div class="stats-card-icon">📊</div>
+</div>
+<div class="stats-card-value highlight">2.77%</div>
+<div class="stats-card-subtitle">
+Últimos 7 dias
+<div class="stats-card-trend trend-up">
+<span>+0.2%</span>
+</div>
+</div>
+</div>
+
+<div class="stats-card">
+<div class="stats-card-header">
+<div class="stats-card-title">CONVERSAS INICIADAS</div>
+<div class="stats-card-icon">💬</div>
+</div>
+<div class="stats-card-value highlight">43</div>
+<div class="stats-card-subtitle">
+Últimos 7 dias
+<div class="stats-card-trend trend-up">
+<span>+22.8%</span>
+</div>
+</div>
+</div>
+</div>
+
+<div class="chart-row">
+<div class="chart-card">
+<div class="chart-header">
+<div class="chart-title">Desempenho dos Anúncios</div>
+<div class="chart-actions">
+<button class="chart-button">Dia</button>
+<button class="chart-button active">Semana</button>
+<button class="chart-button">Mês</button>
+</div>
+</div>
+<div class="chart-container">
+<canvas id="performanceChart"></canvas>
+</div>
+</div>
+
+<div class="chart-card">
+<div class="chart-header">
+<div class="chart-title">Distribuição por Campanhas</div>
+</div>
+<div class="doughnut-chart-container">
+<div class="doughnut-chart">
+<canvas id="campaignChart"></canvas>
+<div class="doughnut-label">
+<div class="doughnut-value highlight">43</div>
+<div class="doughnut-text">Total</div>
+</div>
+</div>
+<div class="doughnut-legend">
+<div class="legend-item">
+<div class="legend-color" style="background-color: #00bcd4;"></div>
+<div class="legend-text">NT - P1 - 02 — MEIO ABERTO</div>
+<div class="legend-value">8</div>
+</div>
+<div class="legend-item">
+<div class="legend-color" style="background-color: #1de9b6;"></div>
+<div class="legend-text">NT - P1 - 02 — 1% SEMELHANTE</div>
+<div class="legend-value">12</div>
+</div>
+<div class="legend-item">
+<div class="legend-color" style="background-color: #4dd0e1;"></div>
+<div class="legend-text">NT - P1 - 02 — FILTRADA</div>
+<div class="legend-value">1</div>
+</div>
+<div class="legend-item">
+<div class="legend-color" style="background-color: #0097a7;"></div>
+<div class="legend-text">NT - 02 — filtrada</div>
+<div class="legend-value">20</div>
+</div>
+<div class="legend-item">
+<div class="legend-color" style="background-color: rgba(255, 255, 255, 0.1);"></div>
+<div class="legend-text">Outros</div>
+<div class="legend-value">2</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="table-card">
+<div class="table-header">
+<div class="chart-title">Conjuntos de anúncios ativos</div>
+<div class="chart-actions">
+</div>
+</div>
+<table>
+<thead>
+<tr>
+<th>Conjunto de anúncios</th>
+<th>Status</th>
+<th>Impressões</th>
+<th>Cliques</th>
+<th>CTR</th>
+<th>Custo (R$)</th>
+<th>Conversas Iniciadas</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NT - P1 - 02 — MEIO ABERTO</td>
+<td><span class="status active">Ativo</span></td>
+<td>415</td>
+<td>15</td>
+<td>3,69%</td>
+<td>R$ 0,47</td>
+<td>8</td>
+</tr>
+<tr>
+<td>NT - P1 - 02 — 1% SEMELHANTE</td>
+<td><span class="status active">Ativo</span></td>
+<td>1.459</td>
+<td>28</td>
+<td>1,96%</td>
+<td>R$ 1,05</td>
+<td>12</td>
+</tr>
+<tr>
+<td>NT - P1 - 02 — FILTRADA</td>
+<td><span class="status active">Ativo</span></td>
+<td>231</td>
+<td>7</td>
+<td>3,21%</td>
+<td>R$ 2,35</td>
+<td>1</td>
+</tr>
+<tr>
+<td>NT - 02 — filtrada</td>
+<td><span class="status active">Ativo</span></td>
+<td>2.045</td>
+<td>60</td>
+<td>3,02%</td>
+<td>R$ 0,91</td>
+<td>20</td>
+</tr>
+<tr style="background-color: rgba(0, 188, 212, 0.05);">
+<td><strong>Total</strong></td>
+<td>-</td>
+<td><strong class="highlight">4.512</strong></td>
+<td>125</td>
+<td><strong class="highlight">2,77%</strong></td>
+<td><strong class="highlight">R$ 37,76</strong></td>
+<td><strong class="highlight">43</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="stats-row" style="grid-template-columns: 1fr 1fr;">
+<div class="stats-card" style="background-color: rgba(0, 188, 212, 0.05);">
+<div class="stats-card-header">
+<div class="stats-card-title">CTR GERAL</div>
+<div class="stats-card-icon" style="background-color: rgba(0, 188, 212, 0.3);">📈</div>
+</div>
+<div class="stats-card-value highlight">2,77%</div>
+<div class="stats-card-subtitle">
+Taxa de cliques geral
+</div>
+</div>
+
+<div class="stats-card" style="background-color: rgba(0, 188, 212, 0.05);">
+<div class="stats-card-header">
+<div class="stats-card-title">CUSTO POR CONVERSA</div>
+<div class="stats-card-icon" style="background-color: rgba(0, 188, 212, 0.3);">💬</div>
+</div>
+<div class="stats-card-value highlight">R$ 0,88</div>
+<div class="stats-card-subtitle">
+Custo médio por conversa iniciada
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<script>
+// Dummy data for charts
+const performanceData = {
+labels: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
+datasets: [
+{
+label: 'Impressões',
+borderColor: '#00bcd4',
+tension: 0.3,
+data: [500, 600, 750, 700, 800, 650, 512],
+fill: false,
+},
+{
+label: 'Cliques',
+borderColor: '#1de9b6',
+tension: 0.3,
+data: [40, 55, 60, 58, 70, 50, 38],
+fill: false,
+},
+],
+};
+
+const campaignData = {
+labels: ['NT - P1 - 02 — MEIO ABERTO', 'NT - P1 - 02 — 1% SEMELHANTE', 'NT - P1 - 02 — FILTRADA', 'NT - 02 — filtrada', 'Outros'],
+datasets: [{
+data: [8, 12, 1, 20, 2],
+backgroundColor: ['#00bcd4', '#1de9b6', '#4dd0e1', '#0097a7', 'rgba(255, 255, 255, 0.1)'],
+borderColor: 'transparent'
+}]
+};
+
+
+// Performance Chart
+const performanceCtx = document.getElementById('performanceChart').getContext('2d');
+new Chart(performanceCtx, {
+type: 'line',
+data: performanceData,
+options: {
+responsive: true,
+maintainAspectRatio: false,
+plugins: {
+legend: {
+display: true,
+labels: {
+color: '#b3b3b3'
+}
+}
+},
+scales: {
+x: {
+grid: {
+color: 'rgba(255, 255, 255, 0.05)'
+},
+ticks: {
+color: '#b3b3b3'
+}
+},
+y: {
+grid: {
+color: 'rgba(255, 255, 255, 0.05)'
+},
+ticks: {
+color: '#b3b3b3'
+}
+}
+}
+}
+});
+
+// Campaign Chart
+const campaignCtx = document.getElementById('campaignChart').getContext('2d');
+new Chart(campaignCtx, {
+type: 'doughnut',
+data: campaignData,
+options: {
+responsive: true,
+maintainAspectRatio: false,
+cutout: '70%',
+plugins: {
+legend: {
+display: false // Hide default legend
+},
+tooltip: {
+callbacks: {
+label: function(context) {
+let label = context.label || '';
+if (label) {
+label += ': ';
+}
+if (context.raw !== undefined) {
+label += context.raw;
+}
+return label;
+}
+}
+}
+}
+}
+});
+
+// Optional: Add functionality to sidebar toggle for smaller screens
+const sidebar = document.querySelector('.sidebar');
+// Example toggle (you might need a button for this in the header)
+// function toggleSidebar() {
+//     sidebar.classList.toggle('collapsed');
+// }
+</script>
+
+</body>
+</html>
